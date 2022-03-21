@@ -1,0 +1,2 @@
+# DistributedObjectiveTechnologies_RmiCalculator
+Проект распределённого калькулятора, который использует Java RMI
