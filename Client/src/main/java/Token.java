@@ -34,4 +34,11 @@ public class Token {
         isOperation = false;
         this.operand = operand;
     }
+
+    @Override
+    public String toString() {
+        return isOperation() ?
+                Character.toString(operation) :
+                Double.toString(operand);
+    }
 }
