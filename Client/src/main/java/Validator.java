@@ -1,16 +1,47 @@
-// Класс Валидатора, предназначенный для валидации выражения - проверки на наличие в нём (синтаксических) ошибок
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.regex.Pattern;
+
 public class Validator {
-    // Проверка правильности расположения скобок в выражении.
-    // Его можно убрать, если такая проверка будет предусмотрена в основном регулярном выражении.
-    private boolean checkParenthesis() throws Exception {
-        throw new Exception("Не реализовано");
+
+    private boolean checkParenthesis(String expression) {
+        Deque<Character> parenthesis = new ArrayDeque<>();
+
+        for (int i = 0; i < expression.length(); i++) {
+            char cur = expression.charAt(i);
+
+            if (cur == '(') {
+                parenthesis.push(cur);
+
+            } else if (cur == ')') {
+
+                if (parenthesis.isEmpty())
+                    return false;
+
+                parenthesis.pop();
+            }
+        }
+
+        return parenthesis.isEmpty();
     }
 
-    // Проверка выражения на (синтаксическую) правильность.
-    // Рекомендуется реализовать через регулярное выражение.
-    // Если в регулярном выражении не удаётся проверить правильность расположения скобок,
-    // то её стоит вынести в метод checkParenthesis и вызывать его после проверки регулярным выражением.
-    public boolean checkValidity(String expr) throws Exception {
-        throw new Exception("Не реализовано");
+    /**
+     * Проверяет, является ли строка с математическим выражением, корректной. Использует регулярные выражения и алгоритм
+     * проверки баланса скобок в выражении.
+     * @param expression Математическое выражение
+     * @return Флаг, означающий корректно выражение или нет
+     */
+    public boolean checkValidity(String expression) {
+        Pattern pattern = Pattern.compile("(?x) ^" +
+                "-?" +
+                "(?> (?: \\( -? )* (?> -? \\d+ (?:\\.\\d+)? ) ( \\) )*   )" +
+                "(?>(?:" +
+                "   [-+*/]" +
+                "   (?> (?: \\( -? )* (?> -? \\d+ (?:\\.\\d+)? ) ( \\) )*   )" +
+                ")*   )" +
+                "$");
+
+        return pattern.matcher(expression).matches() &&
+                checkParenthesis(expression);
     }
 }
