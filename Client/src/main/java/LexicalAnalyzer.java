@@ -81,7 +81,7 @@ public class LexicalAnalyzer {
     }
 
     private boolean isOperator(char raw) {
-        return "+-/*".indexOf(raw) != -1;
+        return "+-/*~".indexOf(raw) != -1;
     }
 
     private boolean isParenthesis(char raw) {
