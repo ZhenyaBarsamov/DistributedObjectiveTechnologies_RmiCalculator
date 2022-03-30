@@ -1,6 +1,5 @@
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.security.InvalidParameterException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Scanner;
@@ -27,7 +26,11 @@ public class Controller {
             System.out.print("Введите выражение: ");
             expression = scanner.nextLine();
 
-            while ( !validator.checkValidity(expression) ) {
+            if (expression.endsWith("clear")) {
+                continue;
+            }
+
+            while (  !validator.checkValidity( expression.trim().replace(" ", "") )  ) {
                 System.out.println("Некорректное выражение");
                 System.out.print("Введите выражение: ");
                 expression = scanner.nextLine();
