@@ -92,6 +92,7 @@ public class Controller {
             case '~': {
                 double b = operands.pop();
                 operands.push(-b);
+                break;
             }
         }
     }
