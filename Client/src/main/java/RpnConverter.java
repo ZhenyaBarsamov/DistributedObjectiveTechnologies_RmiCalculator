@@ -6,69 +6,72 @@ import java.util.ArrayDeque;
 // в обратную польскую запись в виде стека токенов выражения.
 // Для получения токенов выражения используется класс LexicalAnalyzer.
 public class RpnConverter {
-    private static LexicalAnalyzer lexer;
-    
-    static int Prec(char ch)
+
+    private int Prec(char ch)
     {
         switch (ch)
         {
-        case '+':
-        case '-':
-            return 1;
-      
-        case '*':
-        case '/':
-            return 2;
-      
-        case '^':
-            return 3;
+            case '+':
+            case '-':
+                return 1;
+
+            case '*':
+            case '/':
+                return 2;
+
+            case '~':
+                return 3;
         }
         return -1;
     }
 
-    static Deque<Token> infixToPostfix(String exp) throws Exception
+    private String revealUnaryMinus(String expression) {
+        return expression.replaceAll("(?x)" +
+                        "(?<= (?: ^ | [-+*/\\(] ) )" +    // перед минусом стоит оператор, или открывающая скобка, или это начало строки
+                        "   ( - )" +
+                        "(?= (?: \\d+ (?:\\.\\d+)? | (?: \\( ) ) )", // после минуса стоит число
+                "~"); // меняем на тильду
+    }
+
+    private Deque<Token> infixToPostfix(String expression) throws Exception
     {
-        Deque<Token> tokens = new ArrayDeque<>();
-        lexer = new LexicalAnalyzer(exp);
+        expression = revealUnaryMinus(expression);
+        Deque<Token> postfixQueue = new ArrayDeque<>();
+        LexicalAnalyzer lexer = new LexicalAnalyzer(expression);
         Token token = lexer.nextToken();
-        Stack<Character> stack = new Stack<>();
+        Deque<Character> operationStack = new ArrayDeque<>();
 
         while ( token!= null )
         {
-            System.out.println(token);
             if (!token.isOperation() )
-                tokens.offer(token);
+                postfixQueue.offer(token);
             else if (token.getOperation() == '(')
-                stack.push(token.getOperation());
+                operationStack.push(token.getOperation());
             else if (token.getOperation() == ')')
             {
-                while (!stack.isEmpty() && stack.peek() != '(')
-                    tokens.offer(new Token(stack.pop()));
-                stack.pop();
+                while (!operationStack.isEmpty() && operationStack.peek() != '(')
+                    postfixQueue.offer(new Token(operationStack.pop()));
+                operationStack.pop();
             }
             else
             {
-                while (!stack.isEmpty() && Prec(token.getOperation())
-                        <= Prec(stack.peek())){
-                    tokens.offer(new Token(stack.pop()));
+                while (!operationStack.isEmpty() && Prec(token.getOperation()) <= Prec(operationStack.peek())) {
+                    postfixQueue.offer(new Token(operationStack.pop()));
                 }
-                    stack.push(token.getOperation());
+                operationStack.push(token.getOperation());
             }
 
             token = lexer.nextToken();
         }
 
-        while (!stack.isEmpty()){
-            if(stack.peek() == '(')
-                return tokens;
-            tokens.offer(new Token(stack.pop()));
+        while (!operationStack.isEmpty()){
+            postfixQueue.offer(new Token(operationStack.pop()));
         }
-        return tokens;
+        return postfixQueue;
     }
 
     // Преобразовать выражение в обратную польскую запись и вернуть её в виде стека токенов выражения
     public Deque<Token> getExpressionRpn(String expression) throws Exception {
-        Deque<Token> result = infixToPostfix(expression);
-        return result;
+        return infixToPostfix(expression);
     }
 }
