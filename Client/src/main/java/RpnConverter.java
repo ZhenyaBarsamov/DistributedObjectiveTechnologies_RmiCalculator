@@ -75,8 +75,8 @@ public class RpnConverter {
 
     // Преобразовать выражение в обратную польскую запись и вернуть её в виде стека токенов выражения
     public Stack<Token> getExpressionRpn(String expression) throws Exception {
-	String resExp = infixToPostfix(expression);
+	    String resExp = infixToPostfix(expression);
         lexer = new LexicalAnalyzer(resExp);
-        return lexer.allTokens()
+        return null; //lexer.allTokens();
     }
 }
