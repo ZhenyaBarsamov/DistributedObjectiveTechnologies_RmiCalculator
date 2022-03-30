@@ -1,10 +1,12 @@
 import java.util.Stack;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 // Класс Преобразователя - предназначен для преобразования выражения в виде строки
 // в обратную польскую запись в виде стека токенов выражения.
 // Для получения токенов выражения используется класс LexicalAnalyzer.
 public class RpnConverter {
-    private LexicalAnalyzer lexer;
+    private static LexicalAnalyzer lexer;
     
     static int Prec(char ch)
     {
@@ -23,60 +25,50 @@ public class RpnConverter {
         }
         return -1;
     }
-      
-    static String infixToPostfix(String exp)
+
+    static Deque<Token> infixToPostfix(String exp) throws Exception
     {
-        String result = new String("");
-         
+        Deque<Token> tokens = new ArrayDeque<>();
+        lexer = new LexicalAnalyzer(exp);
+        Token token = lexer.nextToken();
         Stack<Character> stack = new Stack<>();
-         
-        for (int i = 0; i<exp.length(); ++i)
+
+        while ( token!= null )
         {
-            char c = exp.charAt(i);
-             
-
-            if (Character.isDigit(c)||c=='.')
-                result += c;
-              
-
-            else if (c == '(')
-                stack.push(c);
-             
-
-            else if (c == ')')
+            System.out.println(token);
+            if (!token.isOperation() )
+                tokens.offer(token);
+            else if (token.getOperation() == '(')
+                stack.push(token.getOperation());
+            else if (token.getOperation() == ')')
             {
-                while (!stack.isEmpty() &&
-                        stack.peek() != '(')
-                    result +=  " "+stack.pop();
-                 
-                    stack.pop();
+                while (!stack.isEmpty() && stack.peek() != '(')
+                    tokens.offer(new Token(stack.pop()));
+                stack.pop();
             }
-            else 
+            else
             {
-                while (!stack.isEmpty() && Prec(c)
-                         <= Prec(stack.peek())){
-                   
-                    result += " "+stack.pop();
-             }
-             if(!result.isEmpty())
-             result +=' ';
-                stack.push(c);
+                while (!stack.isEmpty() && Prec(token.getOperation())
+                        <= Prec(stack.peek())){
+                    tokens.offer(new Token(stack.pop()));
+                }
+                    stack.push(token.getOperation());
             }
-      
+
+            token = lexer.nextToken();
         }
-      
+
         while (!stack.isEmpty()){
             if(stack.peek() == '(')
-                return "Invalid Expression";
-            result += " "+stack.pop();
-         }
-        return result;
+                return tokens;
+            tokens.offer(new Token(stack.pop()));
+        }
+        return tokens;
     }
 
     // Преобразовать выражение в обратную польскую запись и вернуть её в виде стека токенов выражения
-    public Stack<Token> getExpressionRpn(String expression) throws Exception {
-	    String resExp = infixToPostfix(expression);
-        lexer = new LexicalAnalyzer(resExp);
-        return null; //lexer.allTokens();
+    public Deque<Token> getExpressionRpn(String expression) throws Exception {
+        Deque<Token> result = infixToPostfix(expression);
+        return result;
     }
 }
