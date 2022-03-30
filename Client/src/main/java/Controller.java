@@ -1,3 +1,5 @@
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Scanner;
@@ -6,13 +8,15 @@ public class Controller {
     private final Validator validator;
     private final RpnConverter converter;
     private final Deque<Double> operands;
+    private final RemoteServicesWrapper services;
 
-    public Controller() {
+    public Controller() throws NotBoundException, RemoteException {
         validator = new Validator();
         converter = new RpnConverter();
         operands = new ArrayDeque<>();
+        services = new RemoteServicesWrapper();
     }
-    
+
     public void readExpressionAndCalculate() throws Exception {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Для завершения работы введите 0");
@@ -29,8 +33,7 @@ public class Controller {
             }
 
             if ( !"0".equals(expression) ) {
-                // TODO: вызывать метод evaluate
-                double result = 21;
+                double result = evaluate(expression);
                 System.out.println("Результат: " + result);
             }
 
@@ -60,26 +63,35 @@ public class Controller {
         return result;
     }
 
-    private void executeOperator(char operator) {
-        double b = operands.pop();
-        double a = operands.pop();
-        // TODO: заменить несуществующие методы на вызов сервисов
+    private void executeOperator(char operator) throws RemoteException {
         switch (operator) {
             case '+': {
-                operands.push(plus(a, b));
+                double b = operands.pop();
+                double a = operands.pop();
+                operands.push(services.plus(a, b));
                 break;
             }
             case '-': {
-                operands.push(minus(a, b));
+                double b = operands.pop();
+                double a = operands.pop();
+                operands.push(services.minus(a, b));
                 break;
             }
             case '*': {
-                operands.push(multiply(a, b));
+                double b = operands.pop();
+                double a = operands.pop();
+                operands.push(services.multiply(a, b));
                 break;
             }
             case '/': {
-                operands.push(divide(a, b));
+                double b = operands.pop();
+                double a = operands.pop();
+                operands.push(services.division(a, b));
                 break;
+            }
+            case '~': {
+                double b = operands.pop();
+                operands.push(-b);
             }
         }
     }
