@@ -1,5 +1,6 @@
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.security.InvalidParameterException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Scanner;
@@ -17,7 +18,7 @@ public class Controller {
         services = new RemoteServicesWrapper();
     }
 
-    public void readExpressionAndCalculate() throws Exception {
+    public void readExpressionAndCalculate() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Для завершения работы введите 0");
         String expression;
@@ -33,8 +34,12 @@ public class Controller {
             }
 
             if ( !"0".equals(expression) ) {
-                double result = evaluate(expression);
-                System.out.println("Результат: " + result);
+                try {
+                    double result = evaluate(expression);
+                    System.out.println("Результат: " + result);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
 
         }  while ( !"0".equals(expression) );
@@ -63,7 +68,7 @@ public class Controller {
         return result;
     }
 
-    private void executeOperator(char operator) throws RemoteException {
+    private void executeOperator(char operator) throws Exception {
         switch (operator) {
             case '+': {
                 double b = operands.pop();
@@ -86,6 +91,8 @@ public class Controller {
             case '/': {
                 double b = operands.pop();
                 double a = operands.pop();
+                if (b == 0)
+                    throw new Exception("Деление на ноль");
                 operands.push(services.division(a, b));
                 break;
             }
