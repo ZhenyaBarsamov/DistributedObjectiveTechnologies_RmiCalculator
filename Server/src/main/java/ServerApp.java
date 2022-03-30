@@ -6,7 +6,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
-public class Main {
+public class ServerApp {
     // Определяем для каждого удалённого объекта уникальное имя
     public static final String UNIQUE_BINDING_NAME_PLUS = "server.plus_service";
     public static final String UNIQUE_BINDING_NAME_MINUS = "server.minus_service";
