@@ -64,9 +64,14 @@ public class Controller {
             }
         }
 
-        double result = operands.pop();
-        if ( !operands.isEmpty() )
+        if ( operands.isEmpty() ) {
             throw new Exception("Ошибка при вычислении");
+        }
+        double result = operands.pop();
+        if ( !operands.isEmpty() ) {
+            operands.clear();
+            throw new Exception("Ошибка при вычислении");
+        }
 
         return result;
     }
@@ -94,12 +99,18 @@ public class Controller {
             case '/': {
                 double b = operands.pop();
                 double a = operands.pop();
-                if (b == 0)
+                if (b == 0) {
+                    operands.clear();
                     throw new Exception("Деление на ноль");
+                }
                 operands.push(services.division(a, b));
                 break;
             }
             case '~': {
+                if (operands.isEmpty()) {
+                    throw new Exception("Неверный формат выражения");
+                }
+
                 double b = operands.pop();
                 operands.push(-b);
                 break;
