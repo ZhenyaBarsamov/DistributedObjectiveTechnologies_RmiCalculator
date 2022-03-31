@@ -30,7 +30,9 @@ public class Controller {
                 continue;
             }
 
-            while (  !validator.checkValidity( expression.trim().replace(" ", "") )  ) {
+            expression = expression.replaceAll("\\s", "");
+
+            while (  !validator.checkValidity( expression )  ) {
                 System.out.println("Некорректное выражение");
                 System.out.print("Введите выражение: ");
                 expression = scanner.nextLine();
