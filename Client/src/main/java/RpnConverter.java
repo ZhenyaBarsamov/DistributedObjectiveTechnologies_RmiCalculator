@@ -3,7 +3,7 @@ import java.util.Deque;
 import java.util.ArrayDeque;
 
 // Класс Преобразователя - предназначен для преобразования выражения в виде строки
-// в обратную польскую запись в виде стека токенов выражения.
+// в обратную польскую запись в виде очереди токенов выражения.
 // Для получения токенов выражения используется класс LexicalAnalyzer.
 public class RpnConverter {
 
@@ -70,7 +70,7 @@ public class RpnConverter {
         return postfixQueue;
     }
 
-    // Преобразовать выражение в обратную польскую запись и вернуть её в виде стека токенов выражения
+    // Преобразовать выражение в обратную польскую запись и вернуть её в виде очереди токенов выражения
     public Deque<Token> getExpressionRpn(String expression) throws Exception {
         return infixToPostfix(expression);
     }
